@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="icart_controller_port" default="/dev/sensors/icart-mini" />
+  <arg name="joystick_port" default="/dev/input/js0" />
+  <arg name="input_cmd_vel" default="cmd_vel_raw" />
+  <arg name="output_cmd_vel" default="cmd_vel" />
+  <arg name="max_linear_vel" default="0.4" />
+  <arg name="max_anguler_vel" default="0.6" />
+  <arg name="robot_name" default="orne_beta" />
+
+  <node pkg="ypspur_ros" type="ypspur_ros" name="ypspur_ros">
+    <param name="compatible" value="1" />
+    <param name="port" value="$(arg icart_controller_port)" />
+    <param name="param_file" value="$(find rs_navigation_config)/$(arg robot_name)_config/ypspur.param" />
+  </node>
+
+  <include file="$(find joystick_interrupt)/launch/ps4.launch" >
+    <arg name="dev" value="$(arg joystick_port)" />
+    <arg name="cmd_vel_in" value="$(arg input_cmd_vel)" />
+    <arg name="cmd_vel_out" value="$(arg output_cmd_vel)" />
+    <arg name="linear_vel" value="$(arg max_linear_vel)" />
+    <arg name="anguler_vel" value="$(arg max_anguler_vel)" />
+  </include>
+</launch>
+

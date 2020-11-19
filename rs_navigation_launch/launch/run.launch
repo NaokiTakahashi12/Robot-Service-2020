@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Arguments -->
+  <!-- For neonavigation parameter -->
+  <arg name="use_path_with_velocity" default="true" />
+  <arg name="vel" default="0.6" />
+  <!-- @todo Required PointCloud2 for safety_limiter -->
+  <arg name="use_safety_limiter" default="true" />
+  <arg name="cmd_vel_output" default="/cmd_vel" />
+  <!-- 
+    map_identity is file name without file extension
+    ex) map_identity = "map" -> map.yaml, map_local.yaml
+  -->
+  <arg name="map_idendity" default="cit3f" />
+  <!--
+    ex) robot_name = "robot" -> robot_config from rs_navigation_config
+  -->
+  <arg name="robot_name" default="orne_alpha" />
+  <arg name="model_file" default="$(find orne_description)/urdf/$(arg robot_name).xacro" />
+  <arg name="model" default="$(find xacro)/xacro --inorder '$(arg model_file)'" />
+  <arg name="icart_controller_port" default="/dev/sensors/icart-mini" />
+  <!-- From turtlebot3 navigation -->
+  <arg name="scan_topic"     default="scan"/>
+  <arg name="cloud_topic" default="velodyne_points"/>
+  <arg name="imu_topic" default="imu_data"/>
+  <arg name="odom_topic" default="odom"/>
+  <arg name="initial_pose_x" default="0.0"/>
+  <arg name="initial_pose_y" default="0.0"/>
+  <arg name="initial_pose_a" default="0.0"/>
+  <!-- Arguments end -->
+
+  <!-- Spawn robot description from urdf -->
+  <param name="robot_description" command="$(arg model)" />
+  
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+    <param name="publish_frequency" type="double" value="100.0" />
+    <param name="tf_prefix" value=""/>
+  </node>
+
+  <!-- neonavigation navigate -->
+  <include file="$(find rs_navigation_launch)/launch/navigate.launch">
+    <arg name="map_file" value="$(find rs_navigation_map)/map/$(arg map_idendity).yaml" />
+    <arg name="cmd_vel_output" value="$(arg cmd_vel_output)" />
+    <arg name="use_safety_limiter" value="$(arg use_safety_limiter)" />
+    <arg name="use_path_with_velocity" value="$(arg use_path_with_velocity)" />
+    <arg name="vel" value="$(arg vel)" />
+    <arg name="robot_name" value="$(arg robot_name)" />
+  </include>
+
+  <!-- Local map from PointCloud2 -->
+  <node pkg="costmap_cspace" type="pointcloud2_to_map" name="pointcloud2_to_map">
+    <remap from="map_local" to="map_with_local_objects" />
+    <remap from="cloud" to="velodyne_points" />
+    <param name="z_max" value="1.5" />
+    <param name="z_min" value="0.6" />
+    <param name="width" value="90" />
+    <param name="hz" value="10" />
+  </node>
+
+  <!-- Local costmap from local map -->
+  <node pkg="costmap_cspace" type="largemap_to_map" name="largemap_to_map">
+    <remap from="map" to="map_with_local_objects" />
+    <remap from="map_local" to="overlay1" />
+    <param name="width" value="60" />
+    <param name="hz" value="10" />
+    <param name="round_local_map" value="true" />
+    <param name="simulate_occlusion" value="true" />
+  </node>
+
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find rs_navigation_config)/rviz/runtime_visualization.rviz" respawn="true" />
+  <!-- @todo Save waypoints file in follow_waypoint package -->
+  <!-- @todo Required /initialpose -->
+  <node pkg="follow_waypoints" type="follow_waypoints" name="follow_waypoints">
+    <param name="goal_frame_id" value="map"/>
+    <param name="wayopint_distance_tolerance" value="4"/>
+  </node>
+
+  <!-- Localization -->
+  <!--
+  <include file="$(find rs_navigation_launch)/launch/localization/amcl.launch" >
+    <arg name="scan_topic" value="$(arg scan_topic)" />
+    <arg name="initial_pose_x" value="$(arg initial_pose_x)" />
+    <arg name="initial_pose_y" value="$(arg initial_pose_y)" />
+    <arg name="initial_pose_a" value="$(arg initial_pose_a)" />
+  </include>
+  -->
+
+  <include file="$(find rs_navigation_launch)/launch/localization/mcl_3dl.launch" >
+    <arg name="map_pcd" value="$(find rs_navigation_map)/map/cit3f.pcd" />
+    <arg name="robot_name" value="$(arg robot_name)" />
+    <arg name="cloud_topic" value="$(arg cloud_topic)"/>
+  </include>
+  <node pkg="tf2_ros" type="static_transform_publisher" name="stf1"
+      args="0 0 0 0 0 0 map odom" />
+
+  <!-- 2D scan sensor node -->
+  <!--
+  <node pkg="urg_node" type="urg_node" name="urg_node">
+    <remap from="scan" to="$(arg scan_topic)" />
+    <param name="frame_id" value="/hokuyo_link" />
+    <param name="serial_port" value="/dev/sensors/hokuyo_H0803606" />
+    <param name="angle_min" value="-1.047"/>
+    <param name="angle_max" value="1.047"/>
+  </node>
+  -->
+
+  <!-- Diff drive robot controller -->
+  <node pkg="ypspur_ros" type="ypspur_ros" name="ypspur_ros">
+    <param name="compatible" value="1" />
+    <param name="port" value="$(arg icart_controller_port)" />
+    <param name="param_file" value="$(find rs_navigation_config)/$(arg robot_name)_config/ypspur.param" />
+  </node>
+
+  <include file="$(find velodyne_pointcloud)/launch/VLP16_points.launch" />
+</launch>
+

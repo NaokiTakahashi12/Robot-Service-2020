@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!-- From neonavigation_launch navigate.launch -->
+<launch>
+  <arg name="map_file" />
+  <arg name="use_map_server" default="true" />
+  <arg name="use_safety_limiter" default="false" />
+  <arg name="use_path_with_velocity" default="true" />
+  <arg name="cmd_vel_output" default="/cmd_vel" />
+  <arg name="vel" default="0.5" />
+  <arg name="acc" default="0.5" />
+  <arg name="ang_vel" default="0.9" />
+  <arg name="ang_acc" default="0.7" />
+  <arg name="look_forward" default="0.1" />
+  <arg name="curv_forward" default="0.2" />
+  <arg name="slow_and_precise" default="true" />
+
+  <arg name="linear_expand" default="0.08" />
+  <arg name="linear_spread" default="0.3" />
+  <arg name="output_info" default="screen" />
+
+  <arg name="robot_name" />
+
+  <param name="neonavigation_compatible" value="1" />
+  <rosparam command="load" file="$(find rs_navigation_config)/$(arg robot_name)_config/navigate.yaml"/>
+
+  <node pkg="map_server" type="map_server" name="map_server" args="$(arg map_file)" if="$(arg use_map_server)" >
+  </node>
+
+  <node pkg="planner_cspace" type="planner_3d" name="planner_3d" output="$(arg output_info)">
+    <param name="use_path_with_velocity" value="$(arg use_path_with_velocity)" />
+  </node>
+
+  <node pkg="trajectory_tracker" type="trajectory_tracker" name="spur">
+    <remap from="cmd_vel" to="$(arg cmd_vel_output)" unless="$(arg use_safety_limiter)" />
+    <remap from="cmd_vel" to="cmd_vel_raw" if="$(arg use_safety_limiter)" />
+
+    <param name="max_vel" value="$(arg vel)" />
+    <param name="max_acc" value="$(arg acc)" />
+    <param name="max_angvel" value="$(arg ang_vel)" />
+    <param name="max_angacc" value="$(arg ang_acc)" />
+
+    <param name="curv_forward" value="$(arg curv_forward)" />
+    <param name="look_forward" value="$(arg look_forward)" />
+
+    <param name="rotate_ang" value="0.1" if="$(arg slow_and_precise)" />
+    <param name="rotate_ang" value="0.2" unless="$(arg slow_and_precise)" />
+  </node>
+
+  <node pkg="costmap_cspace" type="costmap_3d" name="costmap_3d" output="$(arg output_info)" >
+  </node>
+
+  <node pkg="safety_limiter" type="safety_limiter" name="safety_limiter" if="$(arg use_safety_limiter)" output="$(arg output_info)">
+    <remap from="cmd_vel_in" to="cmd_vel_raw" />
+    <remap from="cmd_vel" to="$(arg cmd_vel_output)" />
+    <remap from="cloud" to="velodyne_points" />
+    <param name="allow_empty_cloud" value="true" />
+    <param name="watchdog_interval" value="0.0" />
+  </node>
+
+  <node pkg="planner_cspace" type="patrol" name="patrol" />
+</launch>
+
