@@ -5,7 +5,7 @@
   <arg name="input_cmd_vel" default="cmd_vel_raw"/>
   <arg name="output_cmd_vel" default="cmd_vel"/>
   <arg name="max_linear_vel" default="0.4"/>
-  <arg name="max_anguler_vel" default="0.6"/>
+  <arg name="max_angular_vel" default="0.6"/>
   <arg name="robot_name" default="orne_beta"/>
   <node pkg="ypspur_ros" type="ypspur_ros" name="ypspur_ros">
     <param name="compatible" value="1"/>
@@ -17,6 +17,6 @@
     <arg name="cmd_vel_in" value="$(arg input_cmd_vel)"/>
     <arg name="cmd_vel_out" value="$(arg output_cmd_vel)"/>
     <arg name="linear_vel" value="$(arg max_linear_vel)"/>
-    <arg name="anguler_vel" value="$(arg max_anguler_vel)"/>
+    <arg name="angular_vel" value="$(arg max_angular_vel)"/>
   </include>
 </launch>
