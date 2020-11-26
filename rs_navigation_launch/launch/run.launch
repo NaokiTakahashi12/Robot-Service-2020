@@ -9,7 +9,8 @@
   <arg name="simlation" default="false"/>
   <arg name="vel" default="0.6"/>
   <!-- @todo Required PointCloud2 for safety_limiter -->
-  <arg name="use_safety_limiter" default="true"/>
+  <arg name="use_safety_limiter" default="true" unless="$(arg simlation)"/>
+  <arg name="use_safety_limiter" default="false" if="$(arg simlation)"/>
   <arg name="cmd_vel_output" default="/cmd_vel"/>
   <!-- 
     map_identity is file name without file extension
