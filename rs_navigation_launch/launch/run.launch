@@ -125,7 +125,7 @@
   <group if="$(arg simulation)">
     <!-- Simulation only -->
     <node pkg="planner_cspace" type="dummy_robot" name="dummy_robot">
-      <remap from="cmd_vel" to="$(arg cmd_vel_output)"/>
+      <remap from="cmd_vel" to="$(arg navigate_cmd_vel_output)"/>
     </node>
     <node pkg="tf2_ros" type="static_transform_publisher" name="stf1" args="0 0 0 0 0 0 map odom"/>
   </group>
