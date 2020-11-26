@@ -6,11 +6,11 @@
   <arg name="use_amcl" default="false"/>
   <arg name="use_path_with_velocity" default="true"/>
   <arg name="use_2d_urg" default="false"/>
-  <arg name="simlation" default="false"/>
+  <arg name="simulation" default="false"/>
   <arg name="vel" default="0.6"/>
   <!-- @todo Required PointCloud2 for safety_limiter -->
-  <arg name="use_safety_limiter" default="true" unless="$(arg simlation)"/>
-  <arg name="use_safety_limiter" default="false" if="$(arg simlation)"/>
+  <arg name="use_safety_limiter" default="true" unless="$(arg simulation)"/>
+  <arg name="use_safety_limiter" default="false" if="$(arg simulation)"/>
   <arg name="cmd_vel_output" default="/cmd_vel"/>
   <!-- 
     map_identity is file name without file extension
@@ -48,7 +48,7 @@
     <param name="goal_frame_id" value="map"/>
     <param name="wayopint_distance_tolerance" value="4"/>
   </node>
-  <group unless="$(arg simlation)">
+  <group unless="$(arg simulation)">
     <!-- Spawn robot description from urdf -->
     <param name="robot_description" command="$(arg model)"/>
     <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
@@ -110,14 +110,14 @@
     </node>
     <include file="$(find velodyne_pointcloud)/launch/VLP16_points.launch"/>
   </group>
-  <!-- End unless simlation -->
-  <group if="$(arg simlation)">
+  <!-- End unless simulation -->
+  <group if="$(arg simulation)">
     <!-- Simulation only -->
     <node pkg="planner_cspace" type="dummy_robot" name="dummy_robot">
       <remap from="cmd_vel" to="$(arg cmd_vel_output)"/>
     </node>
     <node pkg="tf2_ros" type="static_transform_publisher" name="stf1" args="0 0 0 0 0 0 map odom"/>
   </group>
-  <!-- End if simlation -->
+  <!-- End if simulation -->
   <node pkg="rviz" type="rviz" name="rviz" args="-d $(find rs_navigation_config)/rviz/runtime_visualization.rviz" respawn="true"/>
 </launch>
