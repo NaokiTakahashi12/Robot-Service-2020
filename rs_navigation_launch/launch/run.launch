@@ -7,11 +7,13 @@
   <arg name="use_path_with_velocity" default="true"/>
   <arg name="use_2d_urg" default="false"/>
   <arg name="simulation" default="false"/>
-  <arg name="vel" default="0.6"/>
+  <arg name="max_velocity" default="0.6"/>
+  <arg name="max_angle_velocity" default="0.9"/>
   <!-- @todo Required PointCloud2 for safety_limiter -->
   <arg name="use_safety_limiter" default="true" unless="$(arg simulation)"/>
   <arg name="use_safety_limiter" default="false" if="$(arg simulation)"/>
-  <arg name="cmd_vel_output" default="/cmd_vel"/>
+  <arg name="navigate_cmd_vel_output" default="/navigate/cmd_vel"/>
+  <arg name="output_cmd_vel" default="/cmd_vel"/>
   <!-- 
     map_identity is file name without file extension
     ex) map_identity = "map" -> map.yaml, map_local.yaml
@@ -24,6 +26,7 @@
   <arg name="model_file" default="$(find orne_description)/urdf/$(arg robot_name).xacro"/>
   <arg name="model" default="$(find xacro)/xacro --inorder '$(arg model_file)'"/>
   <arg name="icart_controller_port" default="/dev/sensors/icart-mini"/>
+  <arg name="joystick_port" default="/dev/input/js0"/>
   <!-- From turtlebot3 navigation -->
   <arg name="scan_topic" default="scan"/>
   <arg name="cloud2_topic" default="velodyne_points"/>
@@ -36,10 +39,11 @@
   <!-- neonavigation navigate -->
   <include file="$(find rs_navigation_launch)/launch/navigate.launch">
     <arg name="map_file" value="$(find rs_navigation_map)/map/$(arg map_idendity).yaml"/>
-    <arg name="cmd_vel_output" value="$(arg cmd_vel_output)"/>
+    <arg name="cmd_vel_output" value="$(arg navigate_cmd_vel_output)"/>
     <arg name="use_safety_limiter" value="$(arg use_safety_limiter)"/>
     <arg name="use_path_with_velocity" value="$(arg use_path_with_velocity)"/>
-    <arg name="vel" value="$(arg vel)"/>
+    <arg name="vel" value="$(arg max_velocity)"/>
+    <arg name="ang_vel" value="$(arg max_angle_velocity)"/>
     <arg name="robot_name" value="$(arg robot_name)"/>
   </include>
   <!-- @todo Save waypoints file in follow_waypoint package -->
@@ -109,6 +113,13 @@
       <param name="param_file" value="$(find rs_navigation_config)/$(arg robot_name)_config/ypspur.param"/>
     </node>
     <include file="$(find velodyne_pointcloud)/launch/VLP16_points.launch"/>
+    <include file="$(find joystick_interrupt)/launch/ps4.launch">
+      <arg name="dev" value="$(arg joystick_port)"/>
+      <arg name="cmd_vel_in" value="$(arg navigate_cmd_vel_output)"/>
+      <arg name="cmd_vel_out" value="$(arg output_cmd_vel)"/>
+      <arg name="linear_vel" value="$(arg max_velocity)"/>
+      <arg name="angular_vel" value="$(arg max_angle_velocity)"/>
+    </include>
   </group>
   <!-- End unless simulation -->
   <group if="$(arg simulation)">
