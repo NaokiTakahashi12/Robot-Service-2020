@@ -1,5 +1,5 @@
 costmap_3d:
-  ang_resolution: 32
+  ang_resolution: 8
   footprint: [[0.60, -0.50], [0.60, 0.50], [-0.60, 0.50], [-0.60, -0.50]]
   linear_expand: 0.08
   linear_spread: 0.3
@@ -71,6 +71,7 @@ spur:
   k_ang: 10.0
   k_avel: 4.0
   dist_lim: 0.5
+  rotate_ang: 1.75
   goal_tolerance_dist: 0.08
   goal_tolerance_ang: 0.08
   stop_tolerance_dist: 0.04
