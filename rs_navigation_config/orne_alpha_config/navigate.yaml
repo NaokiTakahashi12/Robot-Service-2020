@@ -28,10 +28,20 @@ costmap_3d:
       linear_spread: 0.3
       keep_unknown: true
 planner_3d:
-  num_threads: 4
+  goal_tolerance_lin: 0.8
+  goal_tolerance_ang: 1
+  goal_tolerance_ang_finish: 1
+  unknown_cost: 100
+  hist_cnt_max: 20
+  hist_cnt_thres: 19
+  hist_cost: 90
+  num_threads: 2
   freq: 5.0
   freq_min: 0.3
   local_range: 5.0
+  longcut_range: 0
+  esc_range: 0.25
+  find_best: true
   remember_updates: true
   hist_ignore_range: 0.3
   hist_ignore_range_max: 1
@@ -39,6 +49,22 @@ planner_3d:
   force_goal_orientation: true
   pos_jump: 5.5
   yaw_jump: 5.5
+  jump_detect_frame: base_link
+  temporary_escape: true
+  queue_size_limit: 0
+  antialias_start: false
+  search_range: 0.4
+  costmap_watchdog: 0.0
+  max_vel: 0.3
+  max_ang_vel: 0.6
+  min_curve_radius: 0.1
+  overwrite_cost: false
+  remember_hit_prob: 0.6
+  remember_miss_prob: 0.3
+  sw_wait: 2.0
+  robot_frame: base_link
+  max_retry_num: -1
+  retain_last_error_status: true
 spur:
   hz: 30.0
   k_dist: 16.0
@@ -52,7 +78,7 @@ spur:
   no_position_control_dist: 0.05
   limit_vel_by_avel: true
   path_step: 1
-  look_forward: 0.0
+  look_forward: 0.5
   curv_forward: 0.5
 safety_limiter:
   footprint: [[0.45, -0.32], [0.45, 0.32], [-0.45, 0.32], [-0.45, -0.32]]
