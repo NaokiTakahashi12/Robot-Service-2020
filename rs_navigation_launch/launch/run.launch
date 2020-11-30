@@ -113,13 +113,25 @@
       <param name="param_file" value="$(find rs_navigation_config)/$(arg robot_name)_config/ypspur.param"/>
     </node>
     <include file="$(find velodyne_pointcloud)/launch/VLP16_points.launch"/>
-    <include file="$(find joystick_interrupt)/launch/ps4.launch">
-      <arg name="dev" value="$(arg joystick_port)"/>
-      <arg name="cmd_vel_in" value="$(arg navigate_cmd_vel_output)"/>
-      <arg name="cmd_vel_out" value="$(arg output_cmd_vel)"/>
-      <arg name="linear_vel" value="$(arg max_velocity)"/>
-      <arg name="angular_vel" value="$(arg max_angle_velocity)"/>
-    </include>
+    <node pkg="joy" type="joy_node" name="joystick">
+      <param name="dev" type="string" value="$(arg joystick_port)"/>
+      <remap from="/joy" to="/joystick_interrupt/joy"/>
+    </node>
+    <node pkg="joystick_interrupt" type="joystick_interrupt" name="joystick_interrupt">
+      <param name="interrupt_button" value="6" type="int"/>
+      <param name="high_speed_button" value="-1" type="int"/>
+      <param name="linear_axis" value="1" type="int"/>
+      <param name="angular_axis" value="0" type="int"/>
+      <param name="linear_axis2" value="10" type="int"/>
+      <param name="angular_axis2" value="9" type="int"/>
+      <param name="linear_vel" value="$(arg max_velocity)" type="double"/>
+      <param name="angular_vel" value="$(arg max_angle_velocity)" type="double"/>
+      <param name="linear_high_speed_ratio" value="1.3" type="double"/>
+      <param name="angular_high_speed_ratio" value="1.1" type="double"/>
+      <remap from="cmd_vel" to="$(arg output_cmd_vel)"/>
+      <remap from="cmd_vel_input" to="$(arg navigate_cmd_vel_output)"/>
+      <remap from="/joy" to="/joystick_interrupt/joy"/>
+    </node>
   </group>
   <!-- End unless simulation -->
   <group if="$(arg simulation)">
