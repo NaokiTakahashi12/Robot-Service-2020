@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="pcd_file" default=""/>
+  <node pkg="pcl_ros" type="pcd_to_pointcloud" name="pcd_to_pointcloud" args="$(arg pcd_file)">
+    <param name="frame_id" value="map"/>
+    <param name="latch" value="true"/>
+    <param name="cloud_pcd" value="pointcloud_to_maps/map_cloud"/>
+  </node>
+  <node pkg="map_organizer" type="pointcloud_to_maps" name="pointcloud_to_maps">
+    <param name="compatible" value="true"/>
+    <param name="min_floor_area" value="10"/>
+    <param name="floor_area_thresh_rate" value="0.3"/>
+    <param name="floor_height" value="0.4"/>
+    <param name="robot_height" value="0.8"/>
+    <param name="floor_tolerance" value="0.37"/>
+    <remap from="mapcloud" to="cloud_pcd"/>
+  </node>
+  <node pkg="map_organizer" type="save_maps" name="save_maps"/>
+</launch>
