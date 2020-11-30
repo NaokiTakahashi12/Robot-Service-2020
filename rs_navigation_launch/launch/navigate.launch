@@ -24,6 +24,7 @@
   <node pkg="planner_cspace" type="planner_3d" name="planner_3d" output="$(arg output_info)">
     <param name="use_path_with_velocity" value="$(arg use_path_with_velocity)"/>
   </node>
+  <!--
   <node pkg="trajectory_tracker" type="trajectory_tracker" name="spur">
     <remap from="cmd_vel" to="$(arg cmd_vel_output)" unless="$(arg use_safety_limiter)"/>
     <remap from="cmd_vel" to="cmd_vel_raw" if="$(arg use_safety_limiter)"/>
@@ -35,6 +36,19 @@
     <param name="look_forward" value="$(arg look_forward)"/>
     <param name="rotate_ang" value="0.1" if="$(arg slow_and_precise)"/>
     <param name="rotate_ang" value="0.2" unless="$(arg slow_and_precise)"/>
+  </node>
+  -->
+  <node pkg="mpc_ros" type="nav_mpc" name="nav_mpc">
+    <param name="debug_info" value="false"/>
+    <param name="pub_twist_cmd" value="true"/>
+    <rosparam file="$(find mpc_ros)/params/mpc_last_params.yaml" command="load"/>
+    <param name="map_frame" value="map"/>
+    <param name="odom_frame" value="odom"/>
+    <param name="car_frame" value="base_link"/>
+    <remap from="/move_base/TrajectoryPlannerROS/global_plan" to="/path"/>
+    <remap from="/move_base_simple/goal" to="/planner_3d/path_end"/>
+    <remap from="cmd_vel" to="$(arg cmd_vel_output)" unless="$(arg use_safety_limiter)"/>
+    <remap from="cmd_vel" to="cmd_vel_raw" if="$(arg use_safety_limiter)"/>
   </node>
   <node pkg="costmap_cspace" type="costmap_3d" name="costmap_3d" output="$(arg output_info)">
   </node>
