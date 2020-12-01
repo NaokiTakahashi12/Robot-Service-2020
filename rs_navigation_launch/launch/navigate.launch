@@ -41,7 +41,7 @@
   <node pkg="mpc_ros" type="nav_mpc" name="nav_mpc">
     <param name="debug_info" value="false"/>
     <param name="pub_twist_cmd" value="true"/>
-    <rosparam file="$(find mpc_ros)/params/mpc_last_params.yaml" command="load"/>
+    <rosparam file="$(find rs_navigation_config)/$(arg robot_name)_config/mpc_params.yaml" command="load"/>
     <param name="map_frame" value="map"/>
     <param name="odom_frame" value="odom"/>
     <param name="car_frame" value="base_link"/>
