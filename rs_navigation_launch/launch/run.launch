@@ -51,6 +51,7 @@
   <node pkg="follow_waypoints" type="follow_waypoints" name="follow_waypoints">
     <param name="goal_frame_id" value="map"/>
     <param name="wayopint_distance_tolerance" value="4"/>
+    <param name="wait_duration" value="0"/>
   </node>
   <group unless="$(arg simulation)">
     <!-- Spawn robot description from urdf -->
