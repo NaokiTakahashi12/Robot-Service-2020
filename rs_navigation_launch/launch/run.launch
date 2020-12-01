@@ -4,7 +4,7 @@
   <!-- For neonavigation parameter -->
   <arg name="use_mcl_3dl" default="true"/>
   <arg name="use_amcl" default="false"/>
-  <arg name="use_path_with_velocity" default="true"/>
+  <arg name="use_path_with_velocity" default="false"/>
   <arg name="use_2d_urg" default="false"/>
   <arg name="simulation" default="false"/>
   <arg name="max_velocity" default="0.6"/>
