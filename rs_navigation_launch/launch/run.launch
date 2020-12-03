@@ -4,7 +4,9 @@
   <!-- For neonavigation parameter -->
   <arg name="use_mcl_3dl" default="true"/>
   <arg name="use_amcl" default="false"/>
-  <arg name="use_path_with_velocity" default="true"/>
+  <arg name="use_mpc_trajectory_tracking" default="true"/>
+  <arg name="use_path_with_velocity" default="true" unless="$(arg use_mpc_trajectory_tracking)"/>
+  <arg name="use_path_with_velocity" default="false" if="$(arg use_mpc_trajectory_tracking)"/>
   <arg name="use_2d_urg" default="false"/>
   <arg name="simulation" default="false"/>
   <arg name="max_velocity" default="0.6"/>
@@ -44,6 +46,7 @@
     <arg name="use_path_with_velocity" value="$(arg use_path_with_velocity)"/>
     <arg name="vel" value="$(arg max_velocity)"/>
     <arg name="ang_vel" value="$(arg max_angle_velocity)"/>
+    <arg name="use_mpc_trajectory_tracking" value="$(arg use_mpc_trajectory_tracking)"/>
     <arg name="robot_name" value="$(arg robot_name)"/>
   </include>
   <!-- @todo Save waypoints file in follow_waypoint package -->
@@ -51,6 +54,7 @@
   <node pkg="follow_waypoints" type="follow_waypoints" name="follow_waypoints">
     <param name="goal_frame_id" value="map"/>
     <param name="wayopint_distance_tolerance" value="4"/>
+    <param name="wait_duration" value="0"/>
   </node>
   <group unless="$(arg simulation)">
     <!-- Spawn robot description from urdf -->
