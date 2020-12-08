@@ -28,9 +28,9 @@ costmap_3d:
       linear_spread: 0.3
       keep_unknown: true
 planner_3d:
-  goal_tolerance_lin: 0.8
-  goal_tolerance_ang: 1
-  goal_tolerance_ang_finish: 1
+  goal_tolerance_lin: 1
+  goal_tolerance_ang: 0.4
+  goal_tolerance_ang_finish: 2
   unknown_cost: 100
   hist_cnt_max: 20
   hist_cnt_thres: 19
