@@ -1,0 +1,29 @@
+repositories:
+  neonavigation:
+    type: git
+    url: https://github.com/at-wat/neonavigation.git
+    version: master
+  neonavigation_msgs:
+    type: git
+    url: https://github.com/at-wat/neonavigation_msgs.git
+    version: master
+  neonavigation_rviz_plugins:
+    type: git
+    url: https://github.com/at-wat/neonavigation_rviz_plugins.git
+    version: master
+  follow_waypoints:
+    type: git
+    url: https://github.com/danielsnider/follow_waypoints.git
+    version: master
+  mpc_ros:
+    type: git
+    url: https://github.com/NaokiTakahashi12/mpc_ros.git
+    version: enhanced_path_tracking
+  map_changer:
+    type: git
+    url: https://github.com/taishiyamamoto/map_changer.git
+    version: main
+  plugin_waypoint:
+    type: git
+    url: https://github.com/MasayaOkada/plugin_waypoint.git
+    version: master
