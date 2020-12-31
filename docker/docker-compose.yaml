@@ -1,0 +1,48 @@
+version: '2.4'
+
+services:
+  xwindow:
+    image: busybox
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /tmp/.docker.xauth:/tmp/.docker.xauth:ro
+      - ~/.Xauthority:/root/.Xauthority:rw
+  roscore:
+    image: naokitakahashi12/robosrv:ros-melodic
+    networks:
+      - rosbridge
+    environment:
+      - ROS_HOSTNAME=roscore
+      - ROS_MASTER_URI=http://roscore:11311
+    command: >
+      stdbuf -o L
+      roscore
+  console:
+    image: naokitakahashi12/robosrv:ros-melodic
+    tty: true
+    environment:
+      - ROS_HOSTNAME=console
+      - ROS_MASTER_URI=http://roscore:11311
+    networks:
+      - rosbridge
+      - velodynebridge
+    volumes_from:
+      - xwindow
+    volumes:
+      - ./melodic_ws:/catkin_ws:rw
+    ports:
+      - 2368 # velodyne data port
+      - 8308 # velodyne telemetry port
+    devices:
+      - /dev/dri # For intel graphics device
+    env_file:
+      - ./env_files/xwindow.env
+
+networks:
+  rosbridge:
+    driver: bridge
+  velodynebridge:
+    ipam:
+      config:
+        - subnet: 192.168.1.100/24
+
