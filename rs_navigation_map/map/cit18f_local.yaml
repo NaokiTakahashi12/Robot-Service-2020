@@ -1,8 +1,0 @@
-image: cit18f_local.pgm
-resolution: 0.050000
-origin: [-46.250000, -46.650000, 0.000000]
-height: 0.150000
-negate: 0
-occupied_thresh: 0.65
-free_thresh: 0.196
-
